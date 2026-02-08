@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Institutional Palette */
+  --background: #f9fafb; /* gray-50 */
+  --foreground: #111827; /* gray-900 */
+  
+  /* Primary Action Color (Deep Charcoal) */
+  --primary: #1f2937; /* gray-800 */
+  --primary-foreground: #ffffff;
+
+  /* Secondary / Muted */
+  --muted: #6b7280; /* gray-500 */
+  --border: #e5e7eb; /* gray-200 */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif; /* Enforce Inter/System */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600; /* Semi-bold max */
+  letter-spacing: -0.025em; /* Tight tracking for serious look */
+  color: #0f172a; /* Slate-900 */
+}
+
+/* Component Overrides for "Calm" look */
+button {
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
