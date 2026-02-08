@@ -76,35 +76,56 @@ export const DocumentTemplate = React.forwardRef<HTMLDivElement, DocumentTemplat
                     {/* 2. Fixed Left Column - Office Bearers */}
                     <aside className="w-48 flex-shrink-0 border-r-2 border-gray-200 pr-6">
                         <div className="space-y-6 text-sm">
+                            {/* District Level */}
+                            {getBearer(community.bearers, 'district_president') && (
+                                <div>
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-0.5">District President</p>
+                                    <p className="font-bold text-gray-900 leading-tight">{getBearer(community.bearers, 'district_president')?.full_name}</p>
+                                </div>
+                            )}
+
+                            {/* Core Committee */}
                             {president && (
                                 <div>
-                                    <p className="font-bold text-gray-500 uppercase text-xs mb-1">President</p>
-                                    <p className="font-bold text-gray-900">{president.full_name}</p>
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-0.5">President</p>
+                                    <p className="font-bold text-gray-900 leading-tight">{president.full_name}</p>
                                 </div>
                             )}
                             {vicePresident && (
                                 <div>
-                                    <p className="font-bold text-gray-500 uppercase text-xs mb-1">Vice President</p>
-                                    <p className="font-bold text-gray-900">{vicePresident.full_name}</p>
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-0.5">Vice President</p>
+                                    <p className="font-bold text-gray-900 leading-tight">{vicePresident.full_name}</p>
                                 </div>
                             )}
                             {secretary && (
                                 <div>
-                                    <p className="font-bold text-gray-500 uppercase text-xs mb-1">Secretary</p>
-                                    <p className="font-bold text-gray-900">{secretary.full_name}</p>
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-0.5">General Secretary</p>
+                                    <p className="font-bold text-gray-900 leading-tight">{secretary.full_name}</p>
+                                </div>
+                            )}
+                            {getBearer(community.bearers, 'joint_secretary') && (
+                                <div>
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-0.5">Joint Secretary</p>
+                                    <p className="font-bold text-gray-900 leading-tight">{getBearer(community.bearers, 'joint_secretary')?.full_name}</p>
                                 </div>
                             )}
                             {treasurer && (
                                 <div>
-                                    <p className="font-bold text-gray-500 uppercase text-xs mb-1">Treasurer</p>
-                                    <p className="font-bold text-gray-900">{treasurer.full_name}</p>
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-0.5">Treasurer</p>
+                                    <p className="font-bold text-gray-900 leading-tight">{treasurer.full_name}</p>
+                                </div>
+                            )}
+                            {getBearer(community.bearers, 'women_secretary') && (
+                                <div>
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-0.5">Women Secretary</p>
+                                    <p className="font-bold text-gray-900 leading-tight">{getBearer(community.bearers, 'women_secretary')?.full_name}</p>
                                 </div>
                             )}
 
                             {executives.length > 0 && (
                                 <div className="pt-4 border-t border-gray-100">
-                                    <p className="font-bold text-gray-500 uppercase text-xs mb-2">Executive Members</p>
-                                    <div className="space-y-2 text-xs text-gray-700">
+                                    <p className="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-2">Executive Members</p>
+                                    <div className="space-y-1.5 text-xs text-gray-700">
                                         {executives.map((member, i) => (
                                             <p key={i} className="leading-tight">{member.full_name}</p>
                                         ))}

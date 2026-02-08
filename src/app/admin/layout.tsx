@@ -1,12 +1,11 @@
 'use client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import { LayoutDashboard, LogOut, ArrowLeft, Menu, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, LogOut, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import { Button } from '@/components/ui/button';
+import { AdminBottomNav } from '@/components/admin/AdminBottomNav';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -27,8 +26,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-gray-50 text-sm font-sans">
 
-            {/* 1. FIXED SIDEBAR (Left, No Scroll, Fixed Width) */}
-            <aside className="w-60 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 z-20">
+            {/* 1. FIXED SIDEBAR (Hidden on Mobile) */}
+            <aside className="hidden md:flex w-60 bg-slate-900 border-r border-slate-800 flex-col flex-shrink-0 z-20">
                 {/* Branding */}
                 <div className="h-14 flex items-center px-5 border-b border-slate-800 flex-shrink-0">
                     <div className="flex items-center gap-2 text-white">
@@ -86,25 +85,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <main className="flex-1 flex flex-col min-w-0 bg-gray-100">
 
                 {/* Fixed Top Bar */}
-                <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0 z-10 shadow-sm">
-                    <h1 className="text-sm font-bold text-gray-700 uppercase tracking-tight">
-                        Siddhartha Colony Panel
+                <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 flex-shrink-0 z-10 shadow-sm relative">
+                    {/* Mobile: Branding shown in header since sidebar is hidden */}
+                    <div className="flex items-center gap-2 md:hidden">
+                        <ShieldCheck size={18} className="text-gray-700" />
+                        <h1 className="text-sm font-bold text-gray-700 uppercase tracking-tight">Siddhartha Colony</h1>
+                    </div>
+
+                    {/* Desktop: Title */}
+                    <h1 className="hidden md:block text-sm font-bold text-gray-700 uppercase tracking-tight">
+                        Administration Console
                     </h1>
+
                     <div className="flex items-center gap-4">
-                        <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 border border-green-200 rounded-full font-medium flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span> Live System
+                        <span className="text-[10px] md:text-xs text-green-700 bg-green-50 px-2 py-0.5 border border-green-200 rounded-full font-medium flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span> Live
                         </span>
-                        {/* Language Toggle Placeholder if needed, or other tools */}
                     </div>
                 </header>
 
                 {/* 3. SCROLLABLE CONTENT ZONE (Only this part scrolls) */}
-                <div className="flex-1 overflow-y-auto p-0 scroll-smooth">
-                    <div className="max-w-[1600px] mx-auto p-6 md:p-8">
+                {/* Added pb-24 for mobile to account for bottom nav */}
+                <div className="flex-1 overflow-y-auto p-0 scroll-smooth pb-24 md:pb-0">
+                    <div className="max-w-[1600px] mx-auto p-4 md:p-8">
                         {children}
                     </div>
                 </div>
             </main>
+
+            {/* 3. MOBILE BOTTOM NAVIGATION (Visible Only on Mobile) */}
+            <AdminBottomNav />
+
         </div>
     );
 }
