@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const navItems = [
         { href: '/admin', labelKey: 'admin.sidebar.dashboard' },
+        { href: '/admin/documents', labelKey: 'admin.sidebar.documents' },
         { href: '/admin/community', labelKey: 'admin.sidebar.community' },
         { href: '/admin/houses', labelKey: 'admin.sidebar.houses' },
         { href: '/admin/tenants', labelKey: 'admin.sidebar.tenants' },

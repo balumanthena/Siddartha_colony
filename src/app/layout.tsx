@@ -32,24 +32,31 @@ export default function RootLayout({
             </div>
           ) : (
             // Public Layout: Standard container and padding
-            <div className="min-h-screen bg-gray-50">
-              {/* Navigation */}
-              <DesktopNav />
-
-              {/* Mobile Header (Hidden on Desktop) */}
-              <header className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm z-50 h-14 flex items-center justify-between px-4">
-                <h1 className="text-lg font-bold text-gray-900 tracking-tight">Siddhartha Colony</h1>
-                <LanguageToggle />
-              </header>
-
-              {/* Main Content Area */}
-              <main className="pt-16 pb-20 lg:pt-20 lg:pb-8 px-4 max-w-7xl mx-auto transition-all duration-300">
+            // Hide navigation on Login page for professional look
+            pathname === '/login' ? (
+              <div className="min-h-screen bg-white flex flex-col">
                 {children}
-              </main>
+              </div>
+            ) : (
+              <div className="min-h-screen bg-gray-50">
+                {/* Navigation */}
+                <DesktopNav />
 
-              {/* Bottom Navigation (Hidden on Desktop) */}
-              <BottomNav />
-            </div>
+                {/* Mobile Header (Hidden on Desktop) */}
+                <header className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm z-50 h-14 flex items-center justify-between px-4">
+                  <h1 className="text-lg font-bold text-gray-900 tracking-tight">Siddhartha Colony</h1>
+                  <LanguageToggle />
+                </header>
+
+                {/* Main Content Area */}
+                <main className="pt-16 pb-20 lg:pt-20 lg:pb-8 px-4 max-w-7xl mx-auto transition-all duration-300">
+                  {children}
+                </main>
+
+                {/* Bottom Navigation (Hidden on Desktop) */}
+                <BottomNav />
+              </div>
+            )
           )}
         </LanguageProvider>
       </body>

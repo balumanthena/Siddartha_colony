@@ -41,6 +41,7 @@ const translations: Record<string, Record<Language, string>> = {
   'admin.sidebar.decisions': { en: 'Decisions', te: 'నిర్ణయాలు' },
   'admin.sidebar.notices': { en: 'Notices', te: 'గమనికలు' },
   'admin.sidebar.auditLog': { en: 'Audit Log', te: 'ఆడిట్ లాగ్' },
+  'admin.sidebar.documents': { en: 'Documents', te: 'పత్రాలు' },
   'admin.header.title': { en: 'Administration', te: 'నిర్వహణ' },
   'admin.sidebar.return': { en: 'Return to App', te: 'యాప్‌కి వెళ్లు' },
   'admin.sidebar.exit': { en: 'Exit Admin', te: 'నిష్క్రమించు' },

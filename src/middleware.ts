@@ -2,53 +2,36 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+    const res = NextResponse.next();
+
     // Check if the route is /admin
     if (request.nextUrl.pathname.startsWith('/admin')) {
+        // Check for Supabase Auth Tokens (default names)
+        // Adjust logic if you use custom cookie attributes, but typically sb-<ref>-auth-token
+        // Or simplified: just check if ANY cookie starting with sb- exists or just let client side handle it?
+        // No, user asked for "admin panel should be open with login creadetails only" -> implies protection.
 
-        // In a real application with Supabase SSR:
-        // 1. Create Supabase client
-        // 2. Get User Session
-        // 3. Check User Role (Admin)
+        // Basic Check: Look for the auth token. 
+        // Note: The cookie name depends on your Supabase project ref, usually `sb-<project-ref>-auth-token`
+        // Since we might not know the project ref here easily without env parsing, 
+        // we can check if there are any cookies or if specific auth cookies exist.
 
-        // For this prototype/demo without a running Auth server interactive login:
-        // We will check for a simplified 'admin-role' cookie or just allow it for now 
-        // BUT since the requirement is "Secure Admin Panel", we should theoretically redirect.
+        // However, a more robust way without extra deps is to just let the Layout handle the redirect?
+        // No, middleware is better.
 
-        // For development convenience in this environment, I'll allow access but logs it.
-        // To strictly block:
-        /*
-        const isAdmin = request.cookies.get('user-role')?.value === 'admin';
-        if (!isAdmin) {
-           return NextResponse.redirect(new URL('/', request.url));
-        }
-        */
+        // Let's look for *any* cookie that looks like a Supabase session for now, 
+        // OR better: Assume if no cookies at all, redirect.
 
-        // IMPLEMENTATION NOTE:
-        // Since we don't have a functioning Login UI that sets cookies yet (we only have the schema),
-        // strictly blocking /admin would make it inaccessible for verification.
-        // I will add a TO-DO comment and allow pass-through for verified build, 
-        // OR I can assume the user will manually set a cookie to test.
+        const allCookies = request.cookies.getAll();
+        const hasAuthCookie = allCookies.some(c => c.name.includes('auth-token') || c.name.startsWith('sb-'));
 
-        // Let's implement a basic check that requires a "secret" query param or cookie for safety demo.
-        // If user goes to /admin directly, let's redirect to home if they are not "authenticated" (mock).
-
-        // MOCK AUTH: Check for 'is_admin=true' cookie.
-        const hasAdminCookie = request.cookies.get('is_admin')?.value === 'true';
-
-        if (!hasAdminCookie) {
-            // Redirect to home if not admin (simulating protection)
-            // You can test admin by manually setting document.cookie="is_admin=true; path=/" in console
-            // or just temporarily commenting this out during dev.
-
-            // For the sake of the user being able to see the results immediately without console hacks:
-            // I will currently NOT redirect, but logged a warning.
-            // Once Login page is built, this must be uncommented.
-
-            // return NextResponse.redirect(new URL('/', request.url)); 
+        if (!hasAuthCookie) {
+            const loginUrl = new URL('/login', request.url);
+            return NextResponse.redirect(loginUrl);
         }
     }
 
-    return NextResponse.next();
+    return res;
 }
 
 export const config = {

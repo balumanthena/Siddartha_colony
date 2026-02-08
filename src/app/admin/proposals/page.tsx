@@ -1,94 +1,183 @@
 'use client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { Plus, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, ThumbsUp, ThumbsDown, MessageSquare, Loader2 } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
+import { format } from 'date-fns';
 import clsx from 'clsx';
+import { Button } from '@/components/ui/button';
 
-// Mock Data
-const MOCK_ITEMS = [
-    { id: 1, type: 'proposal', title: 'Road Widening', status: 'discussion', date: '2024-10-01' },
-    { id: 2, type: 'notice', title: 'General Meeting', status: 'published', date: '2024-10-05' },
-];
+type Proposal = {
+    id: string;
+    title: string;
+    description: string;
+    status: 'discussion' | 'approved' | 'rejected' | 'implemented';
+    created_at: string;
+    proposer_id: string; // join with users
+    users?: { name: string };
+    votes_for: number;
+    votes_against: number;
+};
 
-export default function ProposalNoticeManagement() {
-    const { language } = useLanguage();
-    const [activeTab, setActiveTab] = useState<'proposals' | 'notices'>('proposals');
+// ... imports
+import { Modal } from '@/components/ui/modal';
+
+// ...
+
+export default function ProposalsManagement() {
+    const { language, t } = useLanguage();
+    const [proposals, setProposals] = useState<Proposal[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Form
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [newProposal, setNewProposal] = useState({ title: '', description: '' });
+
+    const fetchProposals = async () => {
+        setIsLoading(true);
+        const { data, error } = await supabase
+            .from('proposals')
+            .select('*, users(name)')
+            .order('created_at', { ascending: false });
+
+        if (!error && data) {
+            setProposals(data as any);
+        }
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        fetchProposals();
+    }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        const user = (await supabase.auth.getUser()).data.user;
+
+        const { error } = await supabase.from('proposals').insert([{
+            title_en: newProposal.title,
+            title_te: newProposal.title, // Auto-fill
+            description_en: newProposal.description,
+            description_te: newProposal.description, // Auto-fill
+            status: 'discussion',
+            created_by: user?.id
+        }]);
+
+        if (error) {
+            alert("Error creating proposal: " + error.message);
+        } else {
+            setIsAddModalOpen(false);
+            setNewProposal({ title: '', description: '' });
+            fetchProposals();
+        }
+        setIsSubmitting(false);
+    };
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-gray-800">
-                    {language === 'en' ? 'Proposals & Notices' : 'ప్రతిపాదనలు & గమనికలు'}
+                <h2 className="text-xl font-bold text-gray-800 tracking-tight">
+                    {language === 'en' ? 'Community Proposals' : 'సంఘం ప్రతిపాదనలు'}
                 </h2>
-                <Button className="flex items-center gap-2">
+                <Button onClick={() => setIsAddModalOpen(true)} className="flex items-center gap-2">
                     <Plus size={16} />
-                    {language === 'en' ? 'Add New' : 'కొత్తది జోడించండి'}
+                    {language === 'en' ? 'New Proposal' : 'కొత్త ప్రతిపాదన'}
                 </Button>
             </div>
 
-            {/* Tabs */}
-            <div className="flex border-b border-gray-200">
-                <button
-                    onClick={() => setActiveTab('proposals')}
-                    className={clsx(
-                        "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
-                        activeTab === 'proposals' ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"
-                    )}
-                >
-                    Proposals
-                </button>
-                <button
-                    onClick={() => setActiveTab('notices')}
-                    className={clsx(
-                        "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
-                        activeTab === 'notices' ? "border-blue-600 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700"
-                    )}
-                >
-                    Notices
-                </button>
-            </div>
-
-            <div className="space-y-4">
-                {MOCK_ITEMS.filter(i => activeTab === 'proposals' ? i.type === 'proposal' : i.type === 'notice').map((item) => (
-                    <Card key={item.id}>
-                        <CardContent className="pt-6 flex justify-between items-center">
-                            <div>
-                                <h3 className="font-bold text-gray-900">{item.title}</h3>
-                                <p className="text-xs text-gray-500">{item.date}</p>
-
-                                {item.type === 'proposal' && (
-                                    <div className="flex gap-2 mt-2">
-                                        <button className="text-xs flex items-center gap-1 bg-amber-100 text-amber-800 px-2 py-1 rounded">
-                                            <Clock size={12} /> Discussion
-                                        </button>
-                                        <button className="text-xs flex items-center gap-1 hover:bg-green-100 text-gray-400 hover:text-green-800 px-2 py-1 rounded transition-colors">
-                                            <CheckCircle size={12} /> Approve
-                                        </button>
-                                        <button className="text-xs flex items-center gap-1 hover:bg-red-100 text-gray-400 hover:text-red-800 px-2 py-1 rounded transition-colors">
-                                            <XCircle size={12} /> Reject
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="text-right">
-                                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                                    <FileText size={14} /> Docs
-                                </Button>
-                                <p className="text-[10px] text-red-500 mt-1">
-                                    {language === 'en' ? 'No doc uploaded' : 'పత్రం లేదు'}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {isLoading ? (
+                    <div className="col-span-full py-12 text-center text-gray-500">
+                        <Loader2 size={24} className="animate-spin mx-auto mb-2" />
+                        Loading Proposals...
+                    </div>
+                ) : proposals.length === 0 ? (
+                    <div className="col-span-full py-12 text-center text-gray-400 bg-gray-50 border border-dashed rounded-lg">
+                        <MessageSquare size={32} className="mx-auto mb-2 opacity-20" />
+                        <p>No active proposals.</p>
+                    </div>
+                ) : (
+                    proposals.map((proposal) => (
+                        <div key={proposal.id} className="bg-white border border-gray-200 rounded-sm shadow-sm flex flex-col">
+                            <div className="p-6 flex-1">
+                                <div className="flex justify-between items-start mb-4">
+                                    <span className={clsx(
+                                        "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border",
+                                        proposal.status === 'discussion' && "bg-blue-50 text-blue-700 border-blue-200",
+                                        proposal.status === 'approved' && "bg-green-50 text-green-700 border-green-200",
+                                        proposal.status === 'rejected' && "bg-red-50 text-red-700 border-red-200",
+                                        proposal.status === 'implemented' && "bg-gray-50 text-gray-700 border-gray-200"
+                                    )}>
+                                        {proposal.status}
+                                    </span>
+                                    <span className="text-xs text-gray-400">
+                                        {format(new Date(proposal.created_at), 'MMM d')}
+                                    </span>
+                                </div>
+                                <h3 className="font-bold text-gray-900 mb-2 leading-tight">
+                                    {(proposal as any).title_en || proposal.title}
+                                </h3>
+                                <p className="text-sm text-gray-600 line-clamp-3">
+                                    {(proposal as any).description_en || proposal.description}
                                 </p>
+                                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                                        {proposal.users?.name?.charAt(0) || 'U'}
+                                    </div>
+                                    <span className="text-xs text-gray-500">Proposed by {proposal.users?.name || 'Unknown'}</span>
+                                </div>
                             </div>
-                        </CardContent>
-                    </Card>
-                ))}
-
-                {MOCK_ITEMS.filter(i => activeTab === 'proposals' ? i.type === 'proposal' : i.type === 'notice').length === 0 && (
-                    <p className="text-center text-gray-500 py-8">No items found.</p>
+                            <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-between items-center text-xs font-medium">
+                                <div className="flex items-center gap-4">
+                                    <span className="flex items-center gap-1 text-green-700">
+                                        <ThumbsUp size={14} /> {proposal.votes_for || 0}
+                                    </span>
+                                    <span className="flex items-center gap-1 text-red-700">
+                                        <ThumbsDown size={14} /> {proposal.votes_against || 0}
+                                    </span>
+                                </div>
+                                <button className="text-blue-600 hover:underline">View Details</button>
+                            </div>
+                        </div>
+                    ))
                 )}
             </div>
+
+            <Modal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                title="Create Proposal"
+            >
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Title</label>
+                        <input
+                            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                            value={newProposal.title}
+                            onChange={e => setNewProposal({ ...newProposal, title: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Description</label>
+                        <textarea
+                            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none h-32"
+                            value={newProposal.description}
+                            onChange={e => setNewProposal({ ...newProposal, description: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="pt-4 flex justify-end gap-2">
+                        <Button type="button" variant="ghost" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : 'Submit Proposal'}
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }
