@@ -184,30 +184,45 @@ export default function CommunitySettings() {
                 </CardHeader>
                 <CardContent className="space-y-6">
 
-                    {/* Core Posts Grid */}
+                    {/* Core Posts Grid (Sorted by Level) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {DESIGNATIONS.filter(d => !d.isExecutive).map((designation) => {
+                        {DESIGNATIONS.filter(d => !d.isExecutive).sort((a, b) => a.level - b.level).map((designation) => {
                             const active = getActive(designation.key);
                             return (
-                                <div key={designation.key} className="border border-gray-200 rounded-lg p-4 bg-white relative group min-h-[100px] flex flex-col justify-center">
-                                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">
-                                        {language === 'en' ? designation.en : designation.te}
-                                    </p>
+                                <div key={designation.key} className="border border-gray-200 rounded-lg p-4 bg-white relative group min-h-[100px] flex flex-col justify-center shadow-sm">
+                                    <div className="flex justify-between w-full mb-2">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            {language === 'en' ? designation.en : designation.te}
+                                        </p>
+                                        <div className="text-[9px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-medium">
+                                            LEVEL {designation.level}
+                                        </div>
+                                    </div>
 
                                     {active ? (
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <p className="font-bold text-gray-900 text-lg">{active.full_name}</p>
-                                                {active.phone && <p className="text-sm text-gray-500 font-mono">{active.phone}</p>}
-                                                <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
-                                                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                                                    Active since {active.start_date}
+                                                <p className="font-bold text-gray-900 text-lg leading-tight">{active.full_name}</p>
+                                                {active.phone && <p className="text-xs text-gray-500 font-mono mt-0.5">{active.phone}</p>}
+                                                <p className="text-[10px] text-green-700 flex items-center gap-1 mt-2 bg-green-50 px-2 py-0.5 rounded-full w-fit">
+                                                    <span className="w-1 h-1 bg-green-600 rounded-full"></span>
+                                                    Active
                                                 </p>
                                             </div>
+                                            <button
+                                                onClick={() => handleRemoveBearer(active.id)}
+                                                className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                                                title="Vacate Position"
+                                            >
+                                                <UserMinus size={14} />
+                                            </button>
                                         </div>
                                     ) : (
-                                        <div className="flex items-center text-gray-400">
-                                            <p className="text-xs italic">Vacant</p>
+                                        <div className="flex items-center gap-2 text-gray-400 py-2">
+                                            <div className="w-8 h-8 rounded-full border border-dashed border-gray-300 flex items-center justify-center">
+                                                <UserPlus size={14} />
+                                            </div>
+                                            <p className="text-xs italic">Position Vacant</p>
                                         </div>
                                     )}
                                 </div>
