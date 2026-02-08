@@ -2,16 +2,21 @@
 
 :root {
   /* Institutional Palette */
-  --background: #f9fafb; /* gray-50 */
-  --foreground: #111827; /* gray-900 */
-  
+  --background: #f9fafb;
+  /* gray-50 */
+  --foreground: #111827;
+  /* gray-900 */
+
   /* Primary Action Color (Deep Charcoal) */
-  --primary: #1f2937; /* gray-800 */
+  --primary: #1f2937;
+  /* gray-800 */
   --primary-foreground: #ffffff;
 
   /* Secondary / Muted */
-  --muted: #6b7280; /* gray-500 */
-  --border: #e5e7eb; /* gray-200 */
+  --muted: #6b7280;
+  /* gray-500 */
+  --border: #e5e7eb;
+  /* gray-200 */
 }
 
 @theme inline {
@@ -25,15 +30,28 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, sans-serif; /* Enforce Inter/System */
+  font-family: 'Inter', system-ui, sans-serif;
+  /* Enforce Inter/System */
   -webkit-font-smoothing: antialiased;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  /* Prevent body scroll strictly */
 }
 
 /* Typography Hierarchy */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600; /* Semi-bold max */
-  letter-spacing: -0.025em; /* Tight tracking for serious look */
-  color: #0f172a; /* Slate-900 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  /* Semi-bold max */
+  letter-spacing: -0.025em;
+  /* Tight tracking for serious look */
+  color: #0f172a;
+  /* Slate-900 */
 }
 
 /* Component Overrides for "Calm" look */

@@ -52,19 +52,21 @@ export default function AdminDashboard() {
             {/* 2. Split View: Logs & Status */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-180px)]">
 
-                {/* Main: Activity Log (Table Style) */}
-                <Card className="col-span-2 rounded-none border-gray-300 shadow-sm flex flex-col">
+                {/* Main: Activity Log (Responsive: Table/List) */}
+                <Card className="col-span-2 rounded-none border-gray-300 shadow-sm flex flex-col bg-white">
                     <CardHeader className="py-3 px-4 border-b border-gray-200 bg-gray-50/50">
                         <CardTitle className="text-xs font-bold uppercase tracking-widest text-gray-700">System Activity Log</CardTitle>
                     </CardHeader>
+
                     <div className="flex-1 overflow-auto p-0">
-                        <table className="w-full text-left text-xs">
-                            <thead className="bg-gray-50 sticky top-0">
+                        {/* Desktop Table (Hidden on Mobile) */}
+                        <table className="hidden md:table w-full text-left text-xs">
+                            <thead className="bg-gray-50 sticky top-0 z-10">
                                 <tr>
-                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200">Timestamp</th>
-                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200">Event</th>
-                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200">User</th>
-                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200 text-right">Ref ID</th>
+                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200 bg-gray-50">Timestamp</th>
+                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200 bg-gray-50">Event</th>
+                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200 bg-gray-50">User</th>
+                                    <th className="px-4 py-2 font-semibold text-gray-600 border-b border-gray-200 text-right bg-gray-50">Ref ID</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -78,6 +80,27 @@ export default function AdminDashboard() {
                                 ))}
                             </tbody>
                         </table>
+
+                        {/* Mobile List View (Hidden on Desktop) */}
+                        <div className="md:hidden divide-y divide-gray-100">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <div key={i} className="p-4 space-y-2">
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-[10px] text-gray-500 font-mono">2024-02-08 10:4{i}</span>
+                                        <span className="text-[10px] text-gray-400 font-mono">#TRX-{1000 + i}</span>
+                                    </div>
+                                    <p className="text-sm text-gray-900 font-medium leading-snug">
+                                        Contribution Recorded for Maintenance Fund
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600">
+                                            AD
+                                        </div>
+                                        <span className="text-xs text-gray-600">Administrator</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </Card>
 

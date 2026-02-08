@@ -10,12 +10,7 @@ import { Button } from '@/components/ui/button';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const router = useRouter();
-    const [showMenu, setShowMenu] = useState(false);
-
     const { t } = useLanguage();
-
-    const isDashboard = pathname === '/admin';
 
     const navItems = [
         { href: '/admin', labelKey: 'admin.sidebar.dashboard' },
@@ -30,19 +25,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans">
-            {/* Desktop Sidebar (Hidden on Mobile) */}
-            <aside className="hidden md:flex flex-col w-64 bg-[#0a0a0a] text-gray-400 flex-shrink-0 border-r border-gray-800">
-                <div className="p-6 h-16 flex items-center gap-2 text-white">
-                    <ShieldCheck size={18} className="text-blue-500" />
-                    <span className="text-xs font-bold tracking-widest uppercase">Admin Console</span>
+        <div className="flex h-screen w-screen overflow-hidden bg-gray-50 text-sm font-sans">
+
+            {/* 1. FIXED SIDEBAR (Left, No Scroll, Fixed Width) */}
+            <aside className="w-60 bg-slate-900 border-r border-slate-800 flex flex-col flex-shrink-0 z-20">
+                {/* Branding */}
+                <div className="h-14 flex items-center px-5 border-b border-slate-800 flex-shrink-0">
+                    <div className="flex items-center gap-2 text-white">
+                        <ShieldCheck size={18} className="text-gray-400" />
+                        <span className="font-bold tracking-widest uppercase text-xs">Registry</span>
+                    </div>
                 </div>
 
-                <div className="px-6 pb-4">
-                    <div className="text-[10px] uppercase tracking-wider font-bold text-gray-600 mb-2">Governance</div>
-                </div>
-
-                <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+                {/* Navigation Items */}
+                <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5 custom-scrollbar">
+                    <div className="px-3 mb-2 text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                        Main Register
+                    </div>
                     {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
@@ -50,10 +49,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 key={item.href}
                                 href={item.href}
                                 className={clsx(
-                                    "flex items-center gap-3 px-3 py-2 rounded-sm text-sm transition-colors",
+                                    "flex items-center gap-3 px-3 py-2 rounded-sm text-xs transition-all",
                                     isActive
-                                        ? "text-white bg-white/10 font-medium"
-                                        : "hover:text-gray-200 hover:bg-white/5"
+                                        ? "bg-blue-900/40 text-white font-medium border-l-2 border-blue-500"
+                                        : "text-gray-400 hover:text-gray-200 hover:bg-slate-800"
                                 )}
                             >
                                 <span>{t(item.labelKey)}</span>
@@ -62,75 +61,49 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     })}
                 </nav>
 
-                <div className="p-4 border-t border-gray-800">
+                {/* Footer / User Profile */}
+                <div className="p-4 border-t border-slate-800 flex-shrink-0 bg-slate-950">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center text-xs font-bold text-gray-300">
+                            AD
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-white truncate">Administrator</div>
+                            <div className="text-[10px] text-gray-500 truncate">System Access</div>
+                        </div>
+                    </div>
                     <Link
                         href="/"
-                        className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium rounded-sm transition-colors"
+                        className="flex items-center justify-center gap-2 w-full px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-gray-400 hover:text-gray-200 text-xs rounded-sm transition-colors"
                     >
-                        <LogOut size={14} />
-                        <span>Exit to Community App</span>
+                        <LogOut size={12} />
+                        <span>Sign Out</span>
                     </Link>
                 </div>
             </aside>
 
-            {/* Mobile Header (Hidden on Desktop) */}
-            <header className="md:hidden bg-[#0a0a0a] text-white p-4 sticky top-0 z-40 flex items-center justify-between border-b border-gray-800">
-                <div className="flex items-center gap-3">
-                    <button onClick={() => setShowMenu(!showMenu)} className="text-gray-400 hover:text-white">
-                        <Menu size={24} />
-                    </button>
-                    <span className="text-sm font-bold tracking-widest text-gray-200 uppercase flex items-center gap-2">
-                        <ShieldCheck size={16} className="text-blue-500" />
-                        Admin Console
-                    </span>
-                </div>
-                <Link href="/" className="text-xs text-gray-400 hover:text-white border border-gray-700 px-2 py-1 rounded">
-                    Exit
-                </Link>
-            </header>
+            {/* 2. MAIN LAYOUT (Right, Full Height) */}
+            <main className="flex-1 flex flex-col min-w-0 bg-gray-100">
 
-            {/* Mobile Menu Overlay */}
-            {showMenu && (
-                <div className="fixed inset-0 z-50 bg-[#0a0a0a] p-4 flex flex-col">
-                    <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-                        <span className="text-sm font-bold tracking-widest text-white uppercase flex items-center gap-2">
-                            <ShieldCheck size={16} className="text-blue-500" />
-                            Admin Console
+                {/* Fixed Top Bar */}
+                <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0 z-10 shadow-sm">
+                    <h1 className="text-sm font-bold text-gray-700 uppercase tracking-tight">
+                        Siddhartha Colony Panel
+                    </h1>
+                    <div className="flex items-center gap-4">
+                        <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 border border-green-200 rounded-full font-medium flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span> Live System
                         </span>
-                        <button onClick={() => setShowMenu(false)} className="text-gray-400">
-                            <ArrowLeft size={24} />
-                        </button>
+                        {/* Language Toggle Placeholder if needed, or other tools */}
                     </div>
-                    <nav className="flex-1 space-y-4 overflow-y-auto">
-                        {navItems.map(item => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setShowMenu(false)}
-                                className={clsx(
-                                    "block text-lg font-medium py-2 border-b border-gray-900",
-                                    pathname === item.href ? "text-blue-400" : "text-gray-400"
-                                )}
-                            >
-                                {t(item.labelKey)}
-                            </Link>
-                        ))}
-                    </nav>
-                    <div className="mt-8">
-                        <Link
-                            href="/"
-                            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-800 text-white font-medium rounded-sm"
-                        >
-                            <LogOut size={16} />
-                            Exit to App
-                        </Link>
+                </header>
+
+                {/* 3. SCROLLABLE CONTENT ZONE (Only this part scrolls) */}
+                <div className="flex-1 overflow-y-auto p-0 scroll-smooth">
+                    <div className="max-w-[1600px] mx-auto p-6 md:p-8">
+                        {children}
                     </div>
                 </div>
-            )}
-
-            {/* Main Content */}
-            <main className="flex-1 p-4 md:p-8 pb-24 overflow-y-auto h-screen">
-                {children}
             </main>
         </div>
     );
